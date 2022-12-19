@@ -1,0 +1,57 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: default
+  name: service-ingress
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:108199670400:certificate/f7998b8d-e889-43cd-b8bb-0a6e079fdbb6
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-2016-08
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    # 그룹명을 주어 해당그룹의 로드벨런스에 인그레스를 묶이게 한다.
+    alb.ingress.kubernetes.io/group.name: "mosaic-square"
+spec:
+  ingressClassName: alb
+  rules:
+    - host: "www.mosaicsquare.io"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mosaic-square-web
+                port:
+                  number: 80
+    - host: "admin.mosaicsquare.io"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mosaic-square-admin-web
+                port:
+                  number: 80
+    - host: "service.mosaicsquare.io"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mosaic-square-service
+                port:
+                  number: 80    
+    - host: "blockchain.mosaicsquare.io"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mosaic-square-blockchain
+                port:
+                  number: 80        
